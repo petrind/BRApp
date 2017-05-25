@@ -1,4 +1,4 @@
-//import React, { Component } from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View, StyleSheet, NavigatorIOS } from 'react-native';
 
 
