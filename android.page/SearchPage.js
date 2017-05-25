@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { StackNavigator,} from 'react-navigation';
 
+import { config } from '../appConfig/Config';
+
 var styles = StyleSheet.create({
 	description: {
 	    marginBottom: 20,
@@ -76,7 +78,7 @@ function urlForQueryAndPage(key, value, pageNumber) {
     .map(key => key + '=' + encodeURIComponent(data[key]))
     .join('&');
 		console.log(querystring);
-  return 'http://192.168.100.5:3000/search?' + querystring;
+  return config.BRS + '/search?' + querystring;
 };
 
 class SearchPage extends Component {
@@ -87,7 +89,7 @@ class SearchPage extends Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	searchString: 'london',
+	    	searchString: 'HP',
 	    	isLoading : false,
 	    	message: ''
 	    };
