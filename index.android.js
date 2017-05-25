@@ -1,27 +1,21 @@
 import React, { Component } from 'react';
-import { AppRegistry, ListView, Text, View, StyleSheet, NavigatorIOS } from 'react-native';
+import { AppRegistry, ListView, Text, View, StyleSheet, Navigator } from 'react-native';
+
+import { StackNavigator,} from 'react-navigation';
 
 
-var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-  }
+var SearchPage = require('./android.page/SearchPage');
+var SearchResults = require('./android.page/SearchResults');
+// var PromoView = require('./android.page/PromoView');
+// var PromoSearchResults = require('./android.page/PromoSearchResults');
+var ItemView = require('./android.page/ItemView');
+
+const App = StackNavigator({
+  Main: {screen: SearchPage},
+  SearchResults: {screen: SearchResults},
+  // PromoView: {screen: PromoView},
+  // PromoSearchResults: {screen: PromoSearchResults},
+  ItemView: {screen: ItemView},
 });
 
-var SearchPage = require('./page/SearchPage');
-
-class BukaReview extends React.Component {
-  render() {
-    return (
-      <Navigator
-        style={styles.container}
-        initialRoute={{
-          title: 'BukaReview',
-          component: SearchPage,
-        }}/>
-    );
-  }
-}
-
-AppRegistry.registerComponent('BukaReview', () => BukaReview);
+AppRegistry.registerComponent('BukaReview', () => App);
