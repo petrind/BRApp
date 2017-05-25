@@ -5,16 +5,22 @@ import {
   StyleSheet,
   Image,
   View,
-  Text
+  Text,
+  ScrollView,
 } from 'react-native';
-import { StackNavigator,} from 'react-navigation';
 
 var styles = StyleSheet.create({
   container: {
-    marginTop: 65
+    flex:1
+  },
+  scrollView: {
+    flex:1
   },
   heading: {
     backgroundColor: '#F8F8F8',
+  },
+  sellerInfo: {
+    backgroundColor: '#EEEEEE',
   },
   separator: {
     height: 1,
@@ -23,6 +29,10 @@ var styles = StyleSheet.create({
   image: {
     width: 400,
     height: 300
+  },
+  imagesmall: {
+    width: 100,
+    height: 100
   },
   price: {
     fontSize: 25,
@@ -44,29 +54,37 @@ var styles = StyleSheet.create({
 
 class ItemView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: `Info of ${navigation.state.params.item.title}`,
+    title: `Info of ${navigation.state.params.item.name}`,
   });
   render() {
     var item = this.props.navigation.state.params.item;
-    var stats = item.bedroom_number + ' bed ' + item.item_type;
-    if (item.bathroom_number) {
-      stats += ', ' + item.bathroom_number + ' ' + (item.bathroom_number > 1
-        ? 'bathrooms' : 'bathroom');
-    }
 
     var price = item.price;
 
     return (
       <View style={styles.container}>
-        <Image style={styles.image}
-            source={{uri: item.images[0]}} />
-        <View style={styles.heading}>
-          <Text style={styles.price}>{price}</Text>
-          <Text style={styles.title}>{item.name}</Text>
-          <View style={styles.separator}/>
-        </View>
-        <Text style={styles.description}>{stats}</Text>
-        <Text style={styles.description}>{item.desc}</Text>
+        <ScrollView> 
+          <Image style={styles.image}
+              source={{uri: item.images[0]}} />
+          <View style={styles.heading}>
+            <Text style={styles.price}>{price}</Text>
+            <Text style={styles.title}>{item.name}</Text>
+            <View style={styles.separator}/>
+          </View>
+          <View style={styles.sellerInfo}>
+            <Image style={styles.imagesmall}
+                source={{uri: item.seller_avatar}} />
+            <Text style={styles.description}>Seller: {item.seller_name}</Text>
+            <Image style={styles.imagesmall}
+                source={{uri: item.seller_level_badge_url}} />        
+            <Text style={styles.description}>{item.seller_level}</Text>
+            <Text style={styles.description}>Feedback Positif: {item.seller_positive_feedback}, negative: {item.seller_negative_feedback}</Text>    
+            <Text style={styles.description}>{item.city}, {item.province}</Text>
+            <View style={styles.separator}/>
+          </View>
+          <Text style={styles.description}>{item.desc}</Text>
+        </ScrollView>
+        
       </View>
     );
   }
