@@ -47,15 +47,14 @@ class SearchResults extends Component {
   constructor(props) {
     super(props);
     var dataSource = new ListView.DataSource(
-      {rowHasChanged: (r1, r2) => r1.lister_url !== r2.lister_url});
-      console.log(this.props.navigation.state.params.listings);
+      {rowHasChanged: (r1, r2) => r1.url !== r2.url});
     this.state = {
       dataSource: dataSource.cloneWithRows(this.props.navigation.state.params.listings)
     };
   }
 
-  rowPressed(listerURL) {
-	  var item = this.props.navigation.state.params.listings.filter(prop => prop.lister_url === listerURL)[0];
+  rowPressed(url) {
+	  var item = this.props.navigation.state.params.listings.filter(prop => prop.url === url)[0];
 
 	  this.props.navigation.navigate('ItemView',{
 	    item: item
@@ -63,18 +62,18 @@ class SearchResults extends Component {
 	}
 
   renderRow(rowData, sectionID, rowID) {
-	  var price = rowData.price_formatted.split(' ')[0];
+	  var price = rowData.price;
 
 	  return (
-	    <TouchableHighlight onPress={() => this.rowPressed(rowData.lister_url)}
+	    <TouchableHighlight onPress={() => this.rowPressed(rowData.url)}
 	        underlayColor='#dddddd'>
 	      <View>
 	        <View style={styles.rowContainer}>
-	          <Image style={styles.thumb} source={{ uri: rowData.img_url }} />
+	          <Image style={styles.thumb} source={{ uri: rowData.images[0] }} />
 	          <View  style={styles.textContainer}>
 	            <Text style={styles.price}>{price}</Text>
 	            <Text style={styles.title}
-	                  numberOfLines={1}>{rowData.title}</Text>
+	                  numberOfLines={1}>{rowData.name}</Text>
 	          </View>
 	        </View>
 	        <View style={styles.separator}/>

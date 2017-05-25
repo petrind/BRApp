@@ -68,11 +68,6 @@ var styles = StyleSheet.create({
 
 function urlForQueryAndPage(key, value, pageNumber) {
   var data = {
-      country: 'uk',
-      pretty: '1',
-      encoding: 'json',
-      listing_type: 'buy',
-      action: 'search_listings',
       page: pageNumber
   };
   data[key] = value;
@@ -80,8 +75,8 @@ function urlForQueryAndPage(key, value, pageNumber) {
   var querystring = Object.keys(data)
     .map(key => key + '=' + encodeURIComponent(data[key]))
     .join('&');
-
-  return 'https://api.nestoria.co.uk/api?' + querystring;
+		console.log(querystring);
+  return 'http://192.168.100.5:3000/search?' + querystring;
 };
 
 class SearchPage extends Component {
@@ -104,7 +99,7 @@ class SearchPage extends Component {
 	  console.log(this.state.searchString);
 	}
 	
-	onLocationPressed() {
+	onPromoPressed() {
 	  navigator.geolocation.getCurrentPosition(
 	    location => {
 	      var search = location.coords.latitude + ',' + location.coords.longitude;
@@ -118,22 +113,38 @@ class SearchPage extends Component {
 	      });
 	    });
 	}
+
+	onPopularPressed() {
+	  navigator.geolocation.getCurrentPosition(
+	    location => {
+	      var search = location.coords.latitude + ',' + location.coords.longitude;
+	      this.setState({ searchString: search });
+	      var query = urlForQueryAndPage('centre_point', search, 1);
+	      this._executeQuery(query);
+	    },
+	    error => {
+	      this.setState({
+	        message: 'There was a problem with obtaining your location: ' + error
+	      });
+	    });
+	}
+
 	_executeQuery(query) {
 	  console.log(query);
 	  this.setState({ isLoading: true });
 	  fetch(query)
 		  .then(response => response.json())
-		  .then(json => this._handleResponse(json.response))
+		  .then(json => this._handleResponse(json))
 		  .catch(error =>
 		     console.log(error));
 	}
 
 	_handleResponse(response) {
 	  this.setState({ isLoading: false , message: '' });
-	  if (response.application_response_code.substr(0, 1) === '1') {
-			console.log(response.listings);
-	    this.props.navigation.navigate('SearchResults',{
-		  	listings: response.listings,
+		console.log(response);
+	  if (response.status === 'OK') {
+		    this.props.navigation.navigate('SearchResults',{
+		  	listings: response.products,
 				itemName: this.state.searchString,
 			});
 	  } else {
@@ -142,7 +153,7 @@ class SearchPage extends Component {
 	}
 
 	onSearchPressed() {
-	  var query = urlForQueryAndPage('place_name', this.state.searchString, 1);
+	  var query = urlForQueryAndPage('keyword', this.state.searchString, 1);
 	  this._executeQuery(query);
 	}
 
@@ -174,12 +185,12 @@ class SearchPage extends Component {
             <View style={styles.center}>
                 <TouchableHighlight style={styles.button}
                     underlayColor='#99d9f4' 
-                    onPress={this.onLocationPressed.bind(this)}>
+                    onPress={this.onPopularPressed.bind(this)}>
                   <Text style={styles.buttonText}>Popular</Text>
                 </TouchableHighlight>
                 <TouchableHighlight style={styles.button}
                     underlayColor='#99d9f4' 
-                    onPress={this.onLocationPressed.bind(this)}>
+                    onPress={this.onPromoPressed.bind(this)}>
                   <Text style={styles.buttonText}>Promo</Text>
                 </TouchableHighlight>
                 <Text style={styles.description}>

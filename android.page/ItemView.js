@@ -54,19 +54,19 @@ class ItemView extends Component {
         ? 'bathrooms' : 'bathroom');
     }
 
-    var price = item.price_formatted.split(' ')[0];
+    var price = item.price;
 
     return (
       <View style={styles.container}>
         <Image style={styles.image}
-            source={{uri: item.img_url}} />
+            source={{uri: item.images[0]}} />
         <View style={styles.heading}>
           <Text style={styles.price}>{price}</Text>
-          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.title}>{item.name}</Text>
           <View style={styles.separator}/>
         </View>
         <Text style={styles.description}>{stats}</Text>
-        <Text style={styles.description}>{item.summary}</Text>
+        <Text style={styles.description}>{item.desc}</Text>
       </View>
     );
   }
