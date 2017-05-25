@@ -1,4 +1,4 @@
-//import React, { Component } from 'react';
+import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View, StyleSheet, NavigatorIOS } from 'react-native';
 
 
@@ -14,7 +14,7 @@ var SearchPage = require('./page/SearchPage');
 class BukaReview extends React.Component {
   render() {
     return (
-      <Navigator
+      <NavigatorIOS
         style={styles.container}
         initialRoute={{
           title: 'BukaReview',
