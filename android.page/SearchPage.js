@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { StackNavigator,} from 'react-navigation';
 
-import { config } from '../appConfig/Config';
+import { config } from '../utils/Config';
+import { fetchBRS } from '../utils/ApiService';
 
 var styles = StyleSheet.create({
 	description: {
@@ -77,7 +78,6 @@ function urlForQueryAndPage(key, value, pageNumber) {
   var querystring = Object.keys(data)
     .map(key => key + '=' + encodeURIComponent(data[key]))
     .join('&');
-		console.log(querystring);
   return config.BRS + '/search?' + querystring;
 };
 
@@ -132,9 +132,8 @@ class SearchPage extends Component {
 	}
 
 	_executeQuery(query) {
-	  console.log(query);
 	  this.setState({ isLoading: true });
-	  fetch(query)
+	  fetchBRS(query)
 		  .then(response => response.json())
 		  .then(json => this._handleResponse(json))
 		  .catch(error =>
