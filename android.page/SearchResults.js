@@ -9,6 +9,7 @@ import {
   ListView,
   Text
 } from 'react-native';
+var Accordion = require('react-native-accordion');
 
 var styles = StyleSheet.create({
   thumb: {
@@ -62,26 +63,42 @@ class SearchResults extends Component {
 	}
 
   renderRow(rowData, sectionID, rowID) {
-	  var price = rowData.price;
+      var price = rowData.price;
+      var header = (
+        <View>
+          <View style={styles.rowContainer}>
+            <Image style={styles.thumb} source={{ uri: rowData.images[0] }} />
+            <View  style={styles.textContainer}>
+              <Text style={styles.price}>{price}</Text>
+              <Text style={styles.title}
+                    numberOfLines={1}>{rowData.name}</Text>
+            </View>
+          </View>
+          <View style={styles.separator}/>
+        </View>
+      );
+    
+        var content = (
+          <View>
+            <TouchableHighlight onPress={() => this.rowPressed(rowData.url)}
+                underlayColor='#dddddd'>
+                <Text>This content is hidden in the accordion</Text>
+            </TouchableHighlight>
+          </View>
+        );
+
+	  
 
 	  return (
-	    <TouchableHighlight onPress={() => this.rowPressed(rowData.url)}
-	        underlayColor='#dddddd'>
-	      <View>
-	        <View style={styles.rowContainer}>
-	          <Image style={styles.thumb} source={{ uri: rowData.images[0] }} />
-	          <View  style={styles.textContainer}>
-	            <Text style={styles.price}>{price}</Text>
-	            <Text style={styles.title}
-	                  numberOfLines={1}>{rowData.name}</Text>
-	          </View>
-	        </View>
-	        <View style={styles.separator}/>
-	      </View>
-	    </TouchableHighlight>
+      <Accordion
+        header={header}
+        content={content}
+        easing="easeOutCubic"
+      />
+
 	  );
 	}
-
+  //https://www.npmjs.com/package/react-native-accordion
   render() {
     return (
       <ListView
