@@ -54,12 +54,16 @@ class SearchResults extends Component {
     };
   }
 
-  rowPressed(url) {
+  detailPressed(url) {
 	  var item = this.props.navigation.state.params.listings.filter(prop => prop.url === url)[0];
 
 	  this.props.navigation.navigate('ItemView',{
 	    item: item
 	  });
+	}
+
+  accordionPressed(url) {
+
 	}
 
   renderRow(rowData, sectionID, rowID) {
@@ -80,7 +84,7 @@ class SearchResults extends Component {
     
         var content = (
           <View>
-            <TouchableHighlight onPress={() => this.rowPressed(rowData.url)}
+            <TouchableHighlight onPress={() => this.detailPressed(rowData.url)}
                 underlayColor='#dddddd'>
                 <Text>This content is hidden in the accordion</Text>
             </TouchableHighlight>
@@ -94,6 +98,7 @@ class SearchResults extends Component {
         header={header}
         content={content}
         easing="easeOutCubic"
+        onpress={() => this.accordionPressed(rowData.url)}
       />
 
 	  );
