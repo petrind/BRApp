@@ -15,70 +15,19 @@ import { StackNavigator,} from 'react-navigation';
 import { config } from '../utils/Config';
 import { fetchBRS } from '../utils/ApiService';
 
-var styles = StyleSheet.create({
-	description: {
-	    marginBottom: 20,
-	    fontSize: 18,
-	    textAlign: 'center',
-	    color: '#656565'
-	},
-	container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 30
-	},
-  	flowRight: {
-	  flexDirection: 'row',
-	  alignItems: 'center',
-	  alignSelf: 'stretch'
-	},
-    center: {
-	  flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-	  alignSelf: 'stretch'
-	},
-	buttonText: {
-	  fontSize: 18,
-	  color: 'white',
-	  alignSelf: 'center'
-	},
-	button: {
-	  height: 36,
-	  flexDirection: 'row',
-	  backgroundColor: '#48BBEC',
-	  borderColor: '#48BBEC',
-	  borderWidth: 1,
-	  borderRadius: 8,
-	  marginBottom: 10,
-	  alignSelf: 'stretch',
-	  justifyContent: 'center'
-	},
-	searchInput: {
-	  height: 36,
-	  padding: 4,
-	  marginRight: 5,
-	  flex: 4,
-	  fontSize: 18,
-	  borderWidth: 1,
-	  borderColor: '#48BBEC',
-	  borderRadius: 8,
-	  color: '#48BBEC'
-	}
-});
+var styles = StyleSheet.create(config.Style.MainPage);
 
-function urlForQueryAndPage(key, value, pageNumber) {
+function urlForQueryAndPage(key, value, pageNumber, path) {
   var data = {
-      page: pageNumber
+      page: pageNumber,
+			per_page: 6
   };
   data[key] = value;
 
   var querystring = Object.keys(data)
     .map(key => key + '=' + encodeURIComponent(data[key]))
     .join('&');
-  return config.BRS + '/search?' + querystring;
+  return config.BRS + path + querystring;
 };
 
 class SearchPage extends Component {
@@ -89,7 +38,7 @@ class SearchPage extends Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	searchString: 'HP',
+	    	searchString: 'iphone 7',
 	    	isLoading : false,
 	    	message: ''
 	    };
@@ -106,7 +55,7 @@ class SearchPage extends Component {
 	    location => {
 	      var search = location.coords.latitude + ',' + location.coords.longitude;
 	      this.setState({ searchString: search });
-	      var query = urlForQueryAndPage('centre_point', search, 1);
+	      var query = urlForQueryAndPage('centre_point', search, 1, '/search?');
 	      this._executeQuery(query);
 	    },
 	    error => {
@@ -121,7 +70,7 @@ class SearchPage extends Component {
 	    location => {
 	      var search = location.coords.latitude + ',' + location.coords.longitude;
 	      this.setState({ searchString: search });
-	      var query = urlForQueryAndPage('centre_point', search, 1);
+	      var query = urlForQueryAndPage('centre_point', search, 1, '/search?');
 	      this._executeQuery(query);
 	    },
 	    error => {
@@ -142,7 +91,6 @@ class SearchPage extends Component {
 
 	_handleResponse(response) {
 	  this.setState({ isLoading: false , message: '' });
-		console.log(response);
 	  if (response.status === 'OK') {
 		    this.props.navigation.navigate('SearchResults',{
 		  	listings: response.products,
@@ -154,15 +102,16 @@ class SearchPage extends Component {
 	}
 
 	onSearchPressed() {
-	  var query = urlForQueryAndPage('keyword', this.state.searchString, 1);
+	  var query = urlForQueryAndPage('keywords', this.state.searchString, 1, '/search?');
+		console.log(query);
 	  this._executeQuery(query);
 	}
 
 	render() {
-	  	console.log('SearchPage.render');
 	  	var spinner = this.state.isLoading ? 
 	  	(<ActivityIndicator 
 	  		size='large' />) : (<View/>)
+
 	    return (
 	      <View style={styles.container}>
 	        <Text style={styles.description}>
@@ -176,7 +125,7 @@ class SearchPage extends Component {
 				  style={styles.searchInput}
 				  value={this.state.searchString}
 				  onChange={this.onSearchTextChanged.bind(this)}
-				  placeholder='Search via name or postcode'/>
+				  placeholder='Cari barang'/>
 			  <TouchableHighlight style={[styles.button,{flex: 1}]}
 			  	onPress={this.onSearchPressed.bind(this)}
 			      underlayColor='#99d9f4'>
@@ -198,7 +147,7 @@ class SearchPage extends Component {
                   Cari barang yang sedang populer atau promo
                 </Text>
             </View>
-			<Image source={require('../resources/house.png')} style={styles.image}/>
+			<Image source={require('../resources/BukaReview.png')} style={styles.image}/>
 			{spinner}
 			<Text style={styles.description}>{this.state.message}</Text>
 	      </View>

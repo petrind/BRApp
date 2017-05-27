@@ -7,59 +7,26 @@ import {
   View,
   Text,
   ScrollView,
+  Linking,
+  Button,
 } from 'react-native';
+import { config } from '../utils/Config';
+import { ThousandSeparator } from '../utils/CommonService';
 
-var styles = StyleSheet.create({
-  container: {
-    flex:1
-  },
-  scrollView: {
-    flex:1
-  },
-  heading: {
-    backgroundColor: '#F8F8F8',
-  },
-  sellerInfo: {
-    backgroundColor: '#EEEEEE',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#DDDDDD'
-  },
-  image: {
-    width: 400,
-    height: 300
-  },
-  imagesmall: {
-    width: 100,
-    height: 100
-  },
-  price: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    margin: 5,
-    color: '#48BBEC'
-  },
-  title: {
-    fontSize: 20,
-    margin: 5,
-    color: '#656565'
-  },
-  description: {
-    fontSize: 18,
-    margin: 5,
-    color: '#656565'
-  }
-});
+var styles = StyleSheet.create(config.Style.ItemPage);
 
 class ItemView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: `Info of ${navigation.state.params.item.name}`,
+    title: `Info dari ${navigation.state.params.item.name}`,
+    headerRight: <Button  
+                    onPress={() => Linking.openURL(navigation.state.params.url)}
+                    title="Beli di Bukalapak"
+                    color="#C40C41" />,
   });
   render() {
     var item = this.props.navigation.state.params.item;
 
-    var price = item.price;
+    var price = ThousandSeparator(item.price);
 
     return (
       <View style={styles.container}>

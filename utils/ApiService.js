@@ -1,7 +1,7 @@
 import { config } from './Config';
+import { Linking, } from 'react-native';
 
 export function fetchBRS (url, options) {
-    console.log(config['AuthorizationToken']);
     if (!options) {
         options = {
             headers: {
@@ -10,4 +10,9 @@ export function fetchBRS (url, options) {
         }
     }
     return fetch(url, options)
+}
+
+export function Buy (url, additionalData) {
+    
+    return Linking.openURL(url)
 }
