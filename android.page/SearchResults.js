@@ -14,25 +14,12 @@ import {
 var Accordion = require('react-native-accordion');
 
 import { Config } from '../utils/Config';
-import { fetchBRS } from '../utils/ApiService';
+import { fetchBRS, urlForQueryAndPage } from '../utils/ApiService';
 import { ThousandSeparator } from '../utils/CommonService';
 import Spinner from 'react-native-loading-spinner-overlay';
 import PaginatedListView from 'react-native-paginated-listview';
 
 var styles = StyleSheet.create(Config.Style.ResultReviewPage);
-
-function urlForQueryAndPage(key, value, pageNumber, path) {
-  var data = {
-      page: pageNumber,
-      maxResults: 50,
-  };
-  data[key] = value;
-
-  var querystring = Object.keys(data)
-    .map(key => key + '=' + encodeURIComponent(data[key]))
-    .join('&');
-  return Config.BRS + path + querystring;
-};
 
 class SearchResults extends Component {
 
@@ -94,7 +81,7 @@ class SearchResults extends Component {
   bukalapakReviewPressed(rowData) {
 	  var item = rowData;
 
-    var query = urlForQueryAndPage('itemId', item.id, 1, '/review/bukalapak?', item.url);
+    var query = urlForQueryAndPage(['itemId', 'bukaSearch'], [item.id, this.state.searchString], 1, '/review/bukalapak?', item.url);
 	  this._executeQuery(query, 'ReviewBL', 'reviews');
 	}
 

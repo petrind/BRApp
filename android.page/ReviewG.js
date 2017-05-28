@@ -16,22 +16,10 @@ var Accordion = require('react-native-accordion');
 import PaginatedListView from 'react-native-paginated-listview';
 
 import { Config } from '../utils/Config';
-import { fetchBRS } from '../utils/ApiService';
+import { fetchBRS, urlForQueryAndPage } from '../utils/ApiService';
 import { BetaAlert } from '../utils/CommonService';
 
 var styles = StyleSheet.create(Config.Style.ResultReviewPage);
-
-function urlForQueryAndPage(key, value, pageNumber, path) {
-  var data = {
-      page: pageNumber,
-  };
-  data[key] = value;
-
-  var querystring = Object.keys(data)
-    .map(key => key + '=' + encodeURIComponent(data[key]))
-    .join('&');
-  return Config.BRS + path + querystring;
-};
 
 class ReviewG extends Component {
 

@@ -15,23 +15,11 @@ import {
 var Accordion = require('react-native-accordion');
 
 import { Config } from '../utils/Config';
-import { fetchBRS } from '../utils/ApiService';
+import { fetchBRS, urlForQueryAndPage } from '../utils/ApiService';
 import { BetaAlert } from '../utils/CommonService';
 import PaginatedListView from 'react-native-paginated-listview';
 
 var styles = StyleSheet.create(Config.Style.ResultReviewPage);
-
-function urlForQueryAndPage(key, value, pageNumber, path) {
-  var data = {
-      page: pageNumber,
-  };
-  data[key] = value;
-
-  var querystring = Object.keys(data)
-    .map(key => key + '=' + encodeURIComponent(data[key]))
-    .join('&');
-  return Config.BRS + path + querystring;
-};
 
 class ReviewY extends Component {
 

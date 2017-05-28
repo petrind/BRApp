@@ -70,8 +70,8 @@ export const Config = {
                 color: '#48BBEC'
             },
             image: {
-                width: 400,
-                height: 70,
+                width: 286,
+                height: 50,
             }
         },
         ResultReviewPage : {

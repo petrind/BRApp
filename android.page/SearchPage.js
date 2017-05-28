@@ -13,22 +13,10 @@ import { StackNavigator,} from 'react-navigation';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { Config } from '../utils/Config';
-import { fetchBRS } from '../utils/ApiService';
+import { fetchBRS, urlForQueryAndPage } from '../utils/ApiService';
 import { BetaAlert } from '../utils/CommonService';
 
 var styles = StyleSheet.create(Config.Style.MainPage);
-
-function urlForQueryAndPage(key, value, pageNumber, path) {
-  var data = {
-      page: pageNumber,
-  };
-  data[key] = value;
-
-  var querystring = Object.keys(data)
-    .map(key => key + '=' + encodeURIComponent(data[key]))
-    .join('&');
-  return Config.BRS + path + querystring;
-};
 
 class SearchPage extends Component {
 	static navigationOptions = {
@@ -38,7 +26,7 @@ class SearchPage extends Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	searchString: 'Samsung',
+	    	searchString: '',
 	    	isLoading : false,
 	    	message: ''
 	    };
