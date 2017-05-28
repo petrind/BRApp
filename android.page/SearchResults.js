@@ -8,42 +8,45 @@ import {
   TouchableHighlight,
   ListView,
   Text,
-  Button
+  Button,
+  ActivityIndicator,
 } from 'react-native';
 var Accordion = require('react-native-accordion');
 
-import { config } from '../utils/Config';
+import { Config } from '../utils/Config';
 import { fetchBRS } from '../utils/ApiService';
 import { ThousandSeparator } from '../utils/CommonService';
+import Spinner from 'react-native-loading-spinner-overlay';
+import PaginatedListView from 'react-native-paginated-listview';
 
-var styles = StyleSheet.create(config.Style.ResultReviewPage);
+var styles = StyleSheet.create(Config.Style.ResultReviewPage);
 
 function urlForQueryAndPage(key, value, pageNumber, path) {
   var data = {
       page: pageNumber,
-			per_page: 6
+      maxResults: 50,
   };
   data[key] = value;
 
   var querystring = Object.keys(data)
     .map(key => key + '=' + encodeURIComponent(data[key]))
     .join('&');
-  return config.BRS + path + querystring;
+  return Config.BRS + path + querystring;
 };
 
 class SearchResults extends Component {
 
   static navigationOptions = ({ navigation }) => ({
-    title: `Results of ${navigation.state.params.itemName}`,
+    title: `Results of ${navigation.state.params.searchString}`,
   });
 
   constructor(props) {
     super(props);
  
-    var dataSource = new ListView.DataSource(
-      {rowHasChanged: (r1, r2) => r1.url !== r2.url});
     this.state = {
-      dataSource: dataSource.cloneWithRows(this.props.navigation.state.params.listings)
+      initialData: this.props.navigation.state.params.listings,
+      isLoading: false,
+      searchString: this.props.navigation.state.params.searchString
     };
   }
 
@@ -53,8 +56,7 @@ class SearchResults extends Component {
 	  fetchBRS(query)
 		  .then(response => response.json())
 		  .then(json => this._handleResponse(json, screen, objectKey, blurl))
-		  .catch(error =>
-		     console.log(error));
+		  .catch(error => this._handleError(error));
 	}
 
 	_handleResponse(response, screen, objectKey, blurl) {
@@ -62,23 +64,26 @@ class SearchResults extends Component {
 	  if (response[objectKey]) {
         console.log(response[objectKey]);
 		    this.props.navigation.navigate(screen, {
-		  	listings: response[objectKey],
-				itemName: this.state.searchString,
-        url: blurl
+          listings: response[objectKey],
+          itemName: this.state.itemName,
+          url: blurl
 			});
 	  } else {
 	    console.log(response);
 	  }
 	}
 
-  rowPressed(rowID) {
-    var item = this.props.navigation.state.params.listings[rowID];
-
-    this.state.searchString = item.name;
+  _handleError(error) {
+      this.setState({ isLoading: false });
+		  console.log(error);
   }
 
-  detailPressed(rowID) {
-	  var item = this.props.navigation.state.params.listings[rowID];
+  rowPressed(rowData) {
+    this.state.itemName = rowData.name;
+  }
+
+  detailPressed(rowData) {
+	  var item = rowData;
 
 	  this.props.navigation.navigate('ItemView',{
 	    item: item,
@@ -86,26 +91,38 @@ class SearchResults extends Component {
 	  });
 	}
 
-  bukalapakReviewPressed(rowID) {
-	  var item = this.props.navigation.state.params.listings[rowID];
+  bukalapakReviewPressed(rowData) {
+	  var item = rowData;
 
     var query = urlForQueryAndPage('itemId', item.id, 1, '/review/bukalapak?', item.url);
 	  this._executeQuery(query, 'ReviewBL', 'reviews');
 	}
 
-  googleReviewPressed(rowID) {
-	  var item = this.props.navigation.state.params.listings[rowID];
+  googleReviewPressed(rowData) {
+    var item = rowData;
 
     var query = urlForQueryAndPage('keywords', item.name, 1, '/review/google?', item.url);
 	  this._executeQuery(query, 'ReviewG', 'items');
 	}
 
-  youtubeReviewPressed(rowID) {
-	  var item = this.props.navigation.state.params.listings[rowID];
+  youtubeReviewPressed(rowData) {
+	  var item = rowData;
 
     var query = urlForQueryAndPage('keywords', item.name, 1, '/review/youtube?', item.url);
 	  this._executeQuery(query, 'ReviewY', 'items');
 	}
+
+  onFetch(pageNumber) {
+    var searchString = this.state.searchString;
+    var query = urlForQueryAndPage('keywords', 
+      searchString, pageNumber, '/search?');
+    return new Promise((resolve, reject) => {
+      fetchBRS(query)
+		  .then(response => response.json())
+		  .then(json => resolve(json.products))
+      .catch(error => reject(error));
+    })
+  }
 
   renderRow(rowData, sectionID, rowID) {
       var price = ThousandSeparator(rowData.price);
@@ -128,7 +145,7 @@ class SearchResults extends Component {
           <View>
               <View style={styles.buttonContainer}>
                 <Button
-                  onPress={() => this.detailPressed(rowID)}
+                  onPress={() => this.detailPressed(rowData)}
                   title="Detil Produk"
                   color="#C30F42"
                   accessibilityLabel="Detil Produk ini"
@@ -136,7 +153,7 @@ class SearchResults extends Component {
               </View>
               <View style={styles.buttonContainer}>
                 <Button
-                  onPress={() => this.bukalapakReviewPressed(rowID)}
+                  onPress={() => this.bukalapakReviewPressed(rowData)}
                   title="Review di Bukalapak"
                   color="#C40C41"
                   accessibilityLabel="Review barang ini di Bukalapak"
@@ -144,7 +161,7 @@ class SearchResults extends Component {
               </View>
               <View style={styles.buttonContainer}>
                 <Button
-                  onPress={() => this.googleReviewPressed(rowID)}
+                  onPress={() => this.googleReviewPressed(rowData)}
                   title="Review di Google"
                   color="#4285F4"
                   accessibilityLabel="Cari Review barang ini di Google"
@@ -152,7 +169,7 @@ class SearchResults extends Component {
               </View>
               <View style={styles.buttonContainer}>
                 <Button
-                  onPress={() => this.youtubeReviewPressed(rowID)}
+                  onPress={() => this.youtubeReviewPressed(rowData)}
                   title="Review di Youtube"
                   color="#bb0000"
                   accessibilityLabel="Cari Review barang ini di Youtube"
@@ -169,7 +186,8 @@ class SearchResults extends Component {
         content={content}
         easing="easeOutCubic"
         underlayColor = "#ddd"
-        onPress = {() => this.rowPressed(rowID)}
+        
+        onPress = {() => this.rowPressed(rowData)}
       />
 
 	  );
@@ -177,9 +195,21 @@ class SearchResults extends Component {
 
   render() {
     return (
-      <ListView
-        dataSource={this.state.dataSource}
+      <View>
+      <Spinner visible={this.state.isLoading} textContent={"Loading..."} textStyle={{color: '#FFF'}} />
+      <PaginatedListView
+        initialData={this.state.initialData}
+        itemsPerPage={18}
+        renderFetchMoreComponent = {() => {return (
+                <View style={styles.buttonComponent} >
+                  <Text style={styles.buttonText}>Load More</Text>
+                </View>)}}
+        renderLoadingComponent = {() => {return (
+                <ActivityIndicator size='medium' />)}}
+        autoFetch = { true }
+        onFetch={this.onFetch.bind(this)}
         renderRow={this.renderRow.bind(this)}/>
+      </View>
     );
   }
 

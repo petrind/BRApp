@@ -7,27 +7,26 @@ import {
   TextInput,
   View,
   TouchableHighlight,
-  ActivityIndicator,
   Image
 } from 'react-native';
 import { StackNavigator,} from 'react-navigation';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-import { config } from '../utils/Config';
+import { Config } from '../utils/Config';
 import { fetchBRS } from '../utils/ApiService';
 
-var styles = StyleSheet.create(config.Style.MainPage);
+var styles = StyleSheet.create(Config.Style.MainPage);
 
 function urlForQueryAndPage(key, value, pageNumber, path) {
   var data = {
       page: pageNumber,
-			per_page: 6
   };
   data[key] = value;
 
   var querystring = Object.keys(data)
     .map(key => key + '=' + encodeURIComponent(data[key]))
     .join('&');
-  return config.BRS + path + querystring;
+  return Config.BRS + path + querystring;
 };
 
 class SearchPage extends Component {
@@ -38,7 +37,7 @@ class SearchPage extends Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	searchString: 'iphone 7',
+	    	searchString: 'Samsung',
 	    	isLoading : false,
 	    	message: ''
 	    };
@@ -55,7 +54,7 @@ class SearchPage extends Component {
 	    location => {
 	      var search = location.coords.latitude + ',' + location.coords.longitude;
 	      this.setState({ searchString: search });
-	      var query = urlForQueryAndPage('centre_point', search, 1, '/search?');
+	      var query = urlForQueryAndPage('centre_point', search, 0, '/search?');
 	      this._executeQuery(query);
 	    },
 	    error => {
@@ -70,7 +69,7 @@ class SearchPage extends Component {
 	    location => {
 	      var search = location.coords.latitude + ',' + location.coords.longitude;
 	      this.setState({ searchString: search });
-	      var query = urlForQueryAndPage('centre_point', search, 1, '/search?');
+	      var query = urlForQueryAndPage('centre_point', search, 0, '/search?');
 	      this._executeQuery(query);
 	    },
 	    error => {
@@ -94,7 +93,7 @@ class SearchPage extends Component {
 	  if (response.status === 'OK') {
 		    this.props.navigation.navigate('SearchResults',{
 		  	listings: response.products,
-				itemName: this.state.searchString,
+				searchString: this.state.searchString,
 			});
 	  } else {
 	    this.setState({ message: 'Location not recognized; please try again.'});
@@ -102,18 +101,15 @@ class SearchPage extends Component {
 	}
 
 	onSearchPressed() {
-	  var query = urlForQueryAndPage('keywords', this.state.searchString, 1, '/search?');
+	  var query = urlForQueryAndPage('keywords', this.state.searchString, 0, '/search?');
 		console.log(query);
 	  this._executeQuery(query);
 	}
 
 	render() {
-	  	var spinner = this.state.isLoading ? 
-	  	(<ActivityIndicator 
-	  		size='large' />) : (<View/>)
-
 	    return (
 	      <View style={styles.container}>
+					<Spinner visible={this.state.isLoading} textContent={"Loading..."} textStyle={{color: '#FFF'}} />
 	        <Text style={styles.description}>
 	          Cari produknya dan review sekaligus.
 	        </Text>
@@ -148,7 +144,6 @@ class SearchPage extends Component {
                 </Text>
             </View>
 			<Image source={require('../resources/BukaReview.png')} style={styles.image}/>
-			{spinner}
 			<Text style={styles.description}>{this.state.message}</Text>
 	      </View>
 	    );

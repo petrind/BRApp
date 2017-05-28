@@ -1,7 +1,11 @@
-export const config = {
+export const Config = {
     BRS: 'http://192.168.100.9:3000',
     'brtoken': 'sdf9g9j494maka0er89424jdsji0923kkl',
-    Style:{
+    Buy: {
+        Title: "Beli di BL",
+        Color: "#C40C41"
+    },
+    Style: {
         MainPage : {
             description: {
                 marginBottom: 20,
@@ -94,11 +98,33 @@ export const config = {
             buttonContainer: {
                 backgroundColor: '#fff',
                 padding: 10
-            }
+            },
+            buttonText: {
+                fontSize: 18,
+                color: 'white',
+                alignSelf: 'center'
+            },
+            buttonComponent: {
+                height: 36,
+                flexDirection: 'row',
+                backgroundColor: '#48BBEC',
+                borderColor: '#48BBEC',
+                borderWidth: 1,
+                borderRadius: 8,
+                marginBottom: 10,
+                alignSelf: 'stretch',
+                justifyContent: 'center'
+            },
         },
         ItemPage: {
             container: {
                 flex:1
+            },
+            centercontainer: {
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
             },
             scrollView: {
                 flex:1
@@ -108,6 +134,9 @@ export const config = {
             },
             sellerInfo: {
                 backgroundColor: '#EEEEEE',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
             },
             separator: {
                 height: 1,
@@ -136,7 +165,12 @@ export const config = {
                 fontSize: 18,
                 margin: 5,
                 color: '#656565'
-            }
+            },
+            rowContainer: {
+                flexDirection: 'row',
+                padding: 10,
+                justifyContent: 'space-between'
+            },
         }
     },
     

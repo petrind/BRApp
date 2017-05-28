@@ -9,14 +9,29 @@ import {
   ListView,
   Text,
   Button,
-  Linking
+  Linking,
+  ActivityIndicator
 } from 'react-native';
 var Accordion = require('react-native-accordion');
+import PaginatedListView from 'react-native-paginated-listview';
 
-import { config } from '../utils/Config';
+import { Config } from '../utils/Config';
 import { fetchBRS } from '../utils/ApiService';
+import { BetaAlert } from '../utils/CommonService';
 
-var styles = StyleSheet.create(config.Style.ResultReviewPage);
+var styles = StyleSheet.create(Config.Style.ResultReviewPage);
+
+function urlForQueryAndPage(key, value, pageNumber, path) {
+  var data = {
+      page: pageNumber,
+  };
+  data[key] = value;
+
+  var querystring = Object.keys(data)
+    .map(key => key + '=' + encodeURIComponent(data[key]))
+    .join('&');
+  return Config.BRS + path + querystring;
+};
 
 class ReviewG extends Component {
 
@@ -24,28 +39,39 @@ class ReviewG extends Component {
     title: `Review ${navigation.state.params.itemName} di Google`,
     headerRight: <Button  
                     onPress={() => Linking.openURL(navigation.state.params.url)}
-                    title="Beli di Bukalapak"
-                    color="#C40C41" />,
+                    title= { Config.Buy.Title }
+                    color= { Config.Buy.Color } />,
   });
 
   constructor(props) {
     super(props);
     var listings = this.props.navigation.state.params.listings;
-    var dataSource = new ListView.DataSource(
-      {rowHasChanged: (r1, r2) => r1.url !== r2.url});
     this.state = {
-      dataSource: dataSource.cloneWithRows(listings),
-      db: listings
+      initialData: listings,
+      itemName: this.props.navigation.state.params.itemName
     };
   }
 
   goToUrl(rowID, screen) {
-    var item = this.props.navigation.state.params.listings[rowID];
+    var item = rowData;
 
     this.props.navigation.navigate(screen, {
       item: item,
       url: this.props.navigation.state.params.url,
     });
+  }
+
+  onFetch(pageNumber) {
+    var searchString = this.state.itemName;
+    var query = urlForQueryAndPage('keywords', 
+      searchString, pageNumber, '/review/google?');
+    BetaAlert();
+    return new Promise((resolve, reject) => {
+      fetchBRS(query)
+		  .then(response => response.json())
+		  .then(json => resolve(json.items))
+      .catch(error => reject(error));
+    })
   }
 
   renderRow(rowData, sectionID, rowID) {
@@ -74,13 +100,13 @@ class ReviewG extends Component {
           <View>
             <View style={styles.rowContainer}>
                 <Button
-                  onPress={() => this.goToUrl(rowID, 'WebViewG')}
+                  onPress={() => this.goToUrl(rowData, 'WebViewG')}
                   title="Kunjungi"
                   color="#4285F4"
                   accessibilityLabel="Kunjungi URL ini"
                 />
                 <Button
-                  onPress={() => this.goToUrl(rowID, 'WebViewGTranslate')}
+                  onPress={() => this.goToUrl(rowData, 'WebViewGTranslate')}
                   title="Terjemahkan"
                   color="#4285F4"
                   accessibilityLabel="Terjemahkan"
@@ -103,14 +129,22 @@ class ReviewG extends Component {
 	}
 
   render() {
-    const { params } = this.props.navigation.state;
 
     return (
       <View>
-        <Text>Berikut adalah hasil pencarian untuk {params.itemName} namun belum tentu adalah review dari {params.itemName}</Text>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={this.renderRow.bind(this)}/>
+          <PaginatedListView
+            initialData={this.state.initialData}
+            itemsPerPage={10}
+            renderFetchMoreComponent = {() => {return (
+                    <View style={styles.buttonComponent} >
+                      <Text style={styles.buttonText}>Load More</Text>
+                    </View>)}}
+            renderLoadingComponent = {() => {return (
+                    <ActivityIndicator size='small' />)}}
+            autoFetch = { false }
+            onFetch={this.onFetch.bind(this)}
+            renderRow={this.renderRow.bind(this)}/>
+          <Text>Catatan: Di atas adalah hasil pencarian untuk {this.state.itemName} namun belum tentu adalah review dari {this.state.itemName}</Text>
       </View>
     );
   }

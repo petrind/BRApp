@@ -9,14 +9,29 @@ import {
   ListView,
   Text,
   Button,
-  Linking
+  Linking,
+  ActivityIndicator
 } from 'react-native';
 var Accordion = require('react-native-accordion');
 
-import { config } from '../utils/Config';
+import { Config } from '../utils/Config';
 import { fetchBRS } from '../utils/ApiService';
+import { BetaAlert } from '../utils/CommonService';
+import PaginatedListView from 'react-native-paginated-listview';
 
-var styles = StyleSheet.create(config.Style.ResultReviewPage);
+var styles = StyleSheet.create(Config.Style.ResultReviewPage);
+
+function urlForQueryAndPage(key, value, pageNumber, path) {
+  var data = {
+      page: pageNumber,
+  };
+  data[key] = value;
+
+  var querystring = Object.keys(data)
+    .map(key => key + '=' + encodeURIComponent(data[key]))
+    .join('&');
+  return Config.BRS + path + querystring;
+};
 
 class ReviewY extends Component {
 
@@ -24,23 +39,34 @@ class ReviewY extends Component {
     title: `Review ${navigation.state.params.itemName} di Youtube`,
     headerRight: <Button  
                     onPress={() => Linking.openURL(navigation.state.params.url)}
-                    title="Beli di Bukalapak"
-                    color="#C40C41" />,
+                    title= { Config.Buy.Title }
+                    color= { Config.Buy.Color }/>,
   });
 
   constructor(props) {
     super(props);
     var listings = this.props.navigation.state.params.listings;
-    var dataSource = new ListView.DataSource(
-      {rowHasChanged: (r1, r2) => r1.url !== r2.url});
     this.state = {
-      dataSource: dataSource.cloneWithRows(listings),
-      db: listings
+      itemName: this.props.navigation.state.params.itemName,
+      initialData: listings
     };
   }
 
-  goToUrl(rowID) {
-    var item = this.props.navigation.state.params.listings[rowID];
+  onFetch(pageNumber) {
+    var searchString = this.state.itemName;
+    var query = urlForQueryAndPage('keywords', 
+      searchString, pageNumber, '/review/youtube?');
+    BetaAlert();
+    return new Promise((resolve, reject) => {
+      fetchBRS(query)
+		  .then(response => response.json())
+		  .then(json => resolve(json.items))
+      .catch(error => reject(error));
+    })
+  }
+
+  goToUrl(rowData) {
+    var item = rowData;
 
     this.props.navigation.navigate('WebViewY', {
       item: item,
@@ -49,7 +75,8 @@ class ReviewY extends Component {
   }
 
   renderRow(rowData, sectionID, rowID) {
-      var imageUri = rowData.snippet.thumbnails.default.url;
+      var imageUri = rowData && rowData.snippet && rowData.snippet.thumbnails
+                      && rowData.snippet.thumbnails.default && rowData.snippet.thumbnails.default.url;
 
       var header = (
         <View>
@@ -70,7 +97,7 @@ class ReviewY extends Component {
         var content = (
           <View>
             <Button
-                onPress={() => this.goToUrl(rowID)}
+                onPress={() => this.goToUrl(rowData)}
                 title="Tonton"
                 color="#bb0000"
                 accessibilityLabel="Cari Review barang ini di Youtube"
@@ -95,10 +122,19 @@ class ReviewY extends Component {
 
     return (
       <View>
-        <Text>Berikut adalah hasil pencarian untuk {params.itemName} namun belum tentu adalah review dari {params.itemName}</Text>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={this.renderRow.bind(this)}/>
+          <PaginatedListView
+            initialData={this.state.initialData}
+            itemsPerPage={10}
+            renderFetchMoreComponent = {() => {return (
+                    <View style={styles.buttonComponent} >
+                      <Text style={styles.buttonText}>Load More</Text>
+                    </View>)}}
+            renderLoadingComponent = {() => {return (
+                    <ActivityIndicator size='small' />)}}
+            autoFetch = { false }
+            onFetch={this.onFetch.bind(this)}
+            renderRow={this.renderRow.bind(this)}/>
+            <Text>Catatan: Di atas adalah hasil pencarian untuk {this.state.itemName} namun belum tentu adalah review dari {this.state.itemName}</Text>
       </View>
     );
   }

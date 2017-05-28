@@ -13,10 +13,10 @@ import {
 } from 'react-native';
 var Accordion = require('react-native-accordion');
 
-import { config } from '../utils/Config';
+import { Config } from '../utils/Config';
 import { fetchBRS } from '../utils/ApiService';
 
-var styles = StyleSheet.create(config.Style.ResultReviewPage);
+var styles = StyleSheet.create(Config.Style.ResultReviewPage);
 
 class ReviewBL extends Component {
 
@@ -24,8 +24,8 @@ class ReviewBL extends Component {
     title: `Review  ${navigation.state.params.itemName} di BL`,
     headerRight: <Button  
                     onPress={() => Linking.openURL(navigation.state.params.url)}
-                    title="Beli di Bukalapak"
-                    color="#C40C41" />,
+                    title= { Config.Buy.Title }
+                    color= { Config.Buy.Color } />,
   });
 
   constructor(props) {
@@ -37,10 +37,6 @@ class ReviewBL extends Component {
       dataSource: dataSource.cloneWithRows(listings),
       db: listings
     };
-  }
-
-  bukalapakBuyPressed() {
-
   }
 
   renderRow(rowData, sectionID, rowID) {
