@@ -33,9 +33,7 @@ class SearchPage extends Component {
 	}
 
 	onSearchTextChanged(event) {
-	  console.log('onSearchTextChanged');
 	  this.setState({ searchString: event.nativeEvent.text });
-	  console.log(this.state.searchString);
 	}
 	
 	onPromoPressed() {
@@ -69,7 +67,6 @@ class SearchPage extends Component {
 
 	onSearchPressed() {
 	  var query = urlForQueryAndPage('keywords', this.state.searchString, 0, '/search?');
-		console.log(query);
 	  this._executeQuery(query);
 	}
 

@@ -25,10 +25,6 @@ class ReviewY extends Component {
 
   static navigationOptions = ({ navigation }) => ({
     title: `Review ${navigation.state.params.itemName} di Youtube`,
-    headerRight: <Button  
-                    onPress={() => Linking.openURL(navigation.state.params.url)}
-                    title= { Config.Buy.Title }
-                    color= { Config.Buy.Color }/>,
   });
 
   constructor(props) {

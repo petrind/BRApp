@@ -39,7 +39,7 @@ class SearchResults extends Component {
 
   _executeQuery(query, screen, objectKey, blurl) {
 	  this.setState({ isLoading: true });
-    console.log(query);
+
 	  fetchBRS(query)
 		  .then(response => response.json())
 		  .then(json => this._handleResponse(json, screen, objectKey, blurl))
@@ -49,7 +49,7 @@ class SearchResults extends Component {
 	_handleResponse(response, screen, objectKey, blurl) {
 	  this.setState({ isLoading: false , message: '' });
 	  if (response[objectKey]) {
-        console.log(response[objectKey]);
+
 		    this.props.navigation.navigate(screen, {
           listings: response[objectKey],
           itemName: this.state.itemName,
@@ -80,23 +80,21 @@ class SearchResults extends Component {
 
   bukalapakReviewPressed(rowData) {
 	  var item = rowData;
-
-    var query = urlForQueryAndPage(['itemId', 'bukaSearch'], [item.id, this.state.searchString], 1, '/review/bukalapak?', item.url);
-	  this._executeQuery(query, 'ReviewBL', 'reviews');
+    var query = urlForQueryAndPage(['itemId', 'bukaSearch'], [item.id, this.state.searchString], 1, '/review/bukalapak?');
+	  this._executeQuery(query, 'ReviewBL', 'reviews', item.url);
 	}
 
   googleReviewPressed(rowData) {
     var item = rowData;
-
-    var query = urlForQueryAndPage('keywords', item.name, 1, '/review/google?', item.url);
-	  this._executeQuery(query, 'ReviewG', 'items');
+    var query = urlForQueryAndPage('keywords', item.name, 1, '/review/google?');
+	  this._executeQuery(query, 'ReviewG', 'items', item.url);
 	}
 
   youtubeReviewPressed(rowData) {
 	  var item = rowData;
 
-    var query = urlForQueryAndPage('keywords', item.name, 1, '/review/youtube?', item.url);
-	  this._executeQuery(query, 'ReviewY', 'items');
+    var query = urlForQueryAndPage('keywords', item.name, 1, '/review/youtube?');
+	  this._executeQuery(query, 'ReviewY', 'items', item.url);
 	}
 
   onFetch(pageNumber) {
