@@ -40,7 +40,7 @@ class ReviewG extends Component {
     };
   }
 
-  goToUrl(rowID, screen) {
+  goToUrl(rowData, screen) {
     var item = rowData;
 
     this.props.navigation.navigate(screen, {
