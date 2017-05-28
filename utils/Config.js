@@ -1,5 +1,5 @@
 export const Config = {
-    BRS: 'http://192.168.100.9:3000',
+    BRS: 'https://bukareview.herokuapp.com',
     'brtoken': 'sdf9g9j494maka0er89424jdsji0923kkl',
     Buy: {
         Title: "Beli di BL",
