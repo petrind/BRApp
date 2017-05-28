@@ -47,6 +47,17 @@ export const Config = {
                 alignSelf: 'stretch',
                 justifyContent: 'center'
             },
+            buttondisabled: {
+                height: 36,
+                flexDirection: 'row',
+                backgroundColor: '#bbb',
+                borderColor: '#bbb',
+                borderWidth: 1,
+                borderRadius: 8,
+                marginBottom: 10,
+                alignSelf: 'stretch',
+                justifyContent: 'center'
+            },
             searchInput: {
                 height: 36,
                 padding: 4,

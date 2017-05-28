@@ -7,7 +7,7 @@ export function ThousandSeparator (num) {
 export function BetaAlert () {
     Alert.alert(
         'Beta Version',
-        'Versi beta belum memungkinkan untuk page kedua Youtube search dan Google search',
+        'Fitur ini belum tersedia di versi beta, terima kasih',
         [
             {text: 'OK', onPress: () => console.log('OK Pressed')},
         ],

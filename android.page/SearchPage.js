@@ -14,6 +14,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 import { Config } from '../utils/Config';
 import { fetchBRS } from '../utils/ApiService';
+import { BetaAlert } from '../utils/CommonService';
 
 var styles = StyleSheet.create(Config.Style.MainPage);
 
@@ -50,33 +51,11 @@ class SearchPage extends Component {
 	}
 	
 	onPromoPressed() {
-	  navigator.geolocation.getCurrentPosition(
-	    location => {
-	      var search = location.coords.latitude + ',' + location.coords.longitude;
-	      this.setState({ searchString: search });
-	      var query = urlForQueryAndPage('centre_point', search, 0, '/search?');
-	      this._executeQuery(query);
-	    },
-	    error => {
-	      this.setState({
-	        message: 'There was a problem with obtaining your location: ' + error
-	      });
-	    });
+	  BetaAlert();
 	}
 
 	onPopularPressed() {
-	  navigator.geolocation.getCurrentPosition(
-	    location => {
-	      var search = location.coords.latitude + ',' + location.coords.longitude;
-	      this.setState({ searchString: search });
-	      var query = urlForQueryAndPage('centre_point', search, 0, '/search?');
-	      this._executeQuery(query);
-	    },
-	    error => {
-	      this.setState({
-	        message: 'There was a problem with obtaining your location: ' + error
-	      });
-	    });
+		BetaAlert();
 	}
 
 	_executeQuery(query) {
@@ -129,12 +108,12 @@ class SearchPage extends Component {
 			  </TouchableHighlight>
 			</View>
             <View style={styles.center}>
-                <TouchableHighlight style={styles.button}
+                <TouchableHighlight style={styles.buttondisabled}
                     underlayColor='#99d9f4' 
                     onPress={this.onPopularPressed.bind(this)}>
                   <Text style={styles.buttonText}>Popular</Text>
                 </TouchableHighlight>
-                <TouchableHighlight style={styles.button}
+                <TouchableHighlight style={styles.buttondisabled}
                     underlayColor='#99d9f4' 
                     onPress={this.onPromoPressed.bind(this)}>
                   <Text style={styles.buttonText}>Promo</Text>

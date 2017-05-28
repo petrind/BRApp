@@ -161,18 +161,18 @@ class SearchResults extends Component {
               </View>
               <View style={styles.buttonContainer}>
                 <Button
-                  onPress={() => this.googleReviewPressed(rowData)}
-                  title="Review di Google"
-                  color="#4285F4"
-                  accessibilityLabel="Cari Review barang ini di Google"
-                />
-              </View>
-              <View style={styles.buttonContainer}>
-                <Button
                   onPress={() => this.youtubeReviewPressed(rowData)}
                   title="Review di Youtube"
                   color="#bb0000"
                   accessibilityLabel="Cari Review barang ini di Youtube"
+                />
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  onPress={() => this.googleReviewPressed(rowData)}
+                  title="Review di Google"
+                  color="#4285F4"
+                  accessibilityLabel="Cari Review barang ini di Google"
                 />
               </View>
           </View>
@@ -205,7 +205,7 @@ class SearchResults extends Component {
                   <Text style={styles.buttonText}>Load More</Text>
                 </View>)}}
         renderLoadingComponent = {() => {return (
-                <ActivityIndicator size='medium' />)}}
+                <ActivityIndicator size='large' />)}}
         autoFetch = { true }
         onFetch={this.onFetch.bind(this)}
         renderRow={this.renderRow.bind(this)}/>
